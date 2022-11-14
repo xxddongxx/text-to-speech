@@ -41,9 +41,7 @@ ALLOWED_HOSTS = []
 
 THIRD_PARTY_APPS = ["rest_framework"]
 
-CUSTOM_APPS = [
-
-]
+CUSTOM_APPS = ["tts.apps.TtsConfig"]
 
 SYSTEM_APPS = [
     "django.contrib.admin",
