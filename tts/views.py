@@ -8,16 +8,18 @@ from rest_framework.views import APIView
 
 from tts import serializers
 from tts.models import Audio, Title
+from tts.permission import IsOwner
 from utils.util import Util
 
 
 class ProjectView(APIView):
+    permission_classes = [IsOwner]
+
     def post(self, request):
         """
         프로젝트 생성
         POST /api/v1/tts/project/
         """
-
         project_page = 0
 
         title = request.data["title"]
@@ -47,14 +49,16 @@ class ProjectView(APIView):
 
             serializer = serializers.ProjectSerializer(data=project_data)
             if not serializer.is_valid():
-                return Response(
-                    serializer.errors, status=status.HTTP_400_BAD_REQUEST
-                )
+                return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
             project_serializer = serializer.save()
-            audio_text_list = Util().make_audio_data(sentence_queue, project_serializer, title_pk)
+            audio_text_list = Util().make_audio_data(
+                sentence_queue, project_serializer, title_pk
+            )
 
-            file_mame = str(project_serializer.title) + "_" + str(project_serializer.page)
+            file_mame = (
+                str(project_serializer.title) + "_" + str(project_serializer.page)
+            )
             Util().make_audio_file(audio_text_list, file_mame)
 
         return Response(
@@ -64,14 +68,16 @@ class ProjectView(APIView):
 
 
 class ProjectDetailView(APIView):
+    permission_classes = [IsOwner]
+
     def get(self, request, pk):
         """
         특정 텍스트 조회
         GET /api/v1/tts/project/<pk>/?query=kwy_word
         """
-        key_word = request.GET.get('query')
+        key_word = request.GET.get("query")
         audios = Audio.objects.filter(project_id=pk, text__contains=key_word)
-        page = request.GET.get('page', 1)
+        page = request.GET.get("page", 1)
         paginator = Paginator(audios, 10)
         serializer = serializers.AudioSerializer(paginator.get_page(page), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
@@ -88,6 +94,8 @@ class ProjectDetailView(APIView):
 
 
 class AudioDetailView(APIView):
+    permission_classes = [IsOwner]
+
     def put(self, request, audio_pk):
         """
         텍스트 수정
@@ -108,5 +116,3 @@ class AudioDetailView(APIView):
         audio = Audio.objects.get(pk=audio_pk)
         audio.delete()
         return Response({"message": "Success"}, status=status.HTTP_204_NO_CONTENT)
-
-
