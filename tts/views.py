@@ -1,14 +1,13 @@
 from collections import deque
 
 from django.core.paginator import Paginator
-from django.db.models import Q
 from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from tts import serializers
-from tts.models import Project, Audio, Title
+from tts.models import Audio, Title
 from utils.util import Util
 
 
@@ -44,7 +43,6 @@ class ProjectView(APIView):
         while sentence_queue:
             project_page += 1
             # 프로젝트 한 페이지 생성
-            # title의 pk
             project_data = {"page": project_page, "title": title_pk}
 
             serializer = serializers.ProjectSerializer(data=project_data)
@@ -54,7 +52,6 @@ class ProjectView(APIView):
                 )
 
             project_serializer = serializer.save()
-            print("project in pk >>>> ", project_serializer.title.pk)
             audio_text_list = Util().make_audio_data(sentence_queue, project_serializer, title_pk)
 
             file_mame = str(project_serializer.title) + "_" + str(project_serializer.page)
@@ -78,6 +75,16 @@ class ProjectDetailView(APIView):
         paginator = Paginator(audios, 10)
         serializer = serializers.AudioSerializer(paginator.get_page(page), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def delete(self, request, pk):
+        """
+        프로젝트 삭제
+        DELETE /api/v1/tts/project/<pk>/
+        프로젝트 대표 model Title 모델
+        """
+        project = Title.objects.get(pk=pk)
+        project.delete()
+        return Response({"message": "Success"}, status=status.HTTP_204_NO_CONTENT)
 
 
 class AudioDetailView(APIView):
