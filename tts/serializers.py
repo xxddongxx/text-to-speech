@@ -19,3 +19,8 @@ class AudioSerializer(serializers.ModelSerializer):
     class Meta:
         model = Audio
         fields = "__all__"
+
+class AudioUpdateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Audio
+        fields = ['text',  'speed']

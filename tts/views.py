@@ -78,3 +78,20 @@ class ProjectDetailView(APIView):
         paginator = Paginator(audios, 10)
         serializer = serializers.AudioSerializer(paginator.get_page(page), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+class AudioDetailView(APIView):
+    def put(self, request, audio_pk):
+        """
+        텍스트 수정
+        GET /api/v1/tts/audio/pk
+        """
+        audio = Audio.objects.get(pk=audio_pk)
+        serializer = serializers.AudioUpdateSerializer(audio, data=request.data)
+
+        if serializer.is_valid():
+            serializer.save()
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+
