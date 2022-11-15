@@ -84,7 +84,7 @@ class AudioDetailView(APIView):
     def put(self, request, audio_pk):
         """
         텍스트 수정
-        GET /api/v1/tts/audio/pk
+        GET /api/v1/tts/audio/pk/
         """
         audio = Audio.objects.get(pk=audio_pk)
         serializer = serializers.AudioUpdateSerializer(audio, data=request.data)
@@ -93,5 +93,13 @@ class AudioDetailView(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_200_OK)
         return Response(serializer.error, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, audio_pk):
+        """
+        Delete /api/v1/tts/audio/pk/
+        """
+        audio = Audio.objects.get(pk=audio_pk)
+        audio.delete()
+        return Response({"message": "Success"}, status=status.HTTP_204_NO_CONTENT)
 
 
