@@ -72,10 +72,9 @@ class ProjectDetailView(APIView):
         특정 텍스트 조회
         GET /api/v1/tts/project/<pk>/?query=kwy_word
         """
-        key_word = request.GET['query']
-        audios = Audio.objects.filter(project_id=pk)
+        key_word = request.GET.get('query')
+        audios = Audio.objects.filter(project_id=pk, text__contains=key_word)
         page = request.GET.get('page', 1)
-        paginator = Paginator(audios, 10, orphans=3)
-
+        paginator = Paginator(audios, 10)
         serializer = serializers.AudioSerializer(paginator.get_page(page), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)

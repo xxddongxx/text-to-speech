@@ -28,4 +28,4 @@ class Audio(models.Model):
     project_page = models.IntegerField(verbose_name="페이지")
 
     def __str__(self):
-        return f"project title: {self.project.title.title} - page: {self.project_page} - {self.sequence}번째 audio"
+        return f"project title: {self.project.title} - page: {self.project_page} - {self.sequence}번째 audio"
