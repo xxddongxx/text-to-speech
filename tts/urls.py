@@ -1,3 +1,7 @@
 from django.urls import path
 
-urlpatterns = []
+from tts import views
+
+urlpatterns = [
+    path("project/", views.ProjectView.as_view()),
+]
