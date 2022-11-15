@@ -1,6 +1,8 @@
+from django.contrib.auth import authenticate
 from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 
 from users import serializers
 
@@ -16,3 +18,34 @@ class UsersRegister(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class Login(APIView):
+    """
+    로그인
+    POST /api/v1/users/login/
+    """
+
+    def post(self, request):
+        user = authenticate(
+            username=request.data.get("username"), password=request.data.get("password")
+        )
+        if user is not None:
+            serializer = serializers.UsersSerializer(user)
+            token = TokenObtainPairSerializer.get_token(user)
+            refresh_token = str(token)
+            access_token = str(token.access_token)
+            response = Response(
+                {
+                    "user": serializer.data,
+                    "message": "login success",
+                    "token": {
+                        "access": access_token,
+                        "refresh": refresh_token,
+                    },
+                },
+                status=status.HTTP_200_OK,
+            )
+            return response
+        else:
+            return Response(status=status.HTTP_400_BAD_REQUEST)
