@@ -33,7 +33,7 @@ class Util:
         tts = gTTS(" ".join(text_list), lang="ko", slow=Speed.NORMAL)
         tts.save("audio\\" + file_name + ".mp3")
 
-    def make_audio_data(self, sentence_queue, project):
+    def make_audio_data(self, sentence_queue, project, title_pk):
         """
         audio 데이터 생성
         """
@@ -50,9 +50,10 @@ class Util:
                 "sequence": sequence,
                 "text": sentence,
                 "speed": 1.0,
-                "project": project.pk,
+                "project": title_pk,
                 "project_page": project.page,
             }
+            print("data >>>> ", data)
 
             audio_serializer = serializers.AudioSerializer(data=data)
             if audio_serializer.is_valid():
