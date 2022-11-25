@@ -80,7 +80,17 @@ class ProjectDetailView(APIView):
         page = request.GET.get("page", 1)
         paginator = Paginator(audios, 10)
         serializer = serializers.AudioSerializer(paginator.get_page(page), many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+
+        return Response(
+            {
+                "message": "Success",
+                "status": status.HTTP_200_OK,
+                "total_count": paginator.count,
+                "total_page": paginator.num_pages,
+                "result": serializer.data,
+            },
+            status=status.HTTP_200_OK,
+        )
 
     def delete(self, request, pk):
         """
