@@ -72,3 +72,17 @@ class TestLogin(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
         self.assertIsInstance(response_data, dict)
         self.assertIn("message", response_data)
+
+    def test_login_success(self):
+        """
+        로그인 성공 테스트
+        """
+        request_data = {"username": "test", "password": "test1234"}
+        response = self.client.post(self.LOGIN_URL, request_data)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response_data, dict)
+        self.assertIn("message", response_data)
+        self.assertIn("user", response_data)
+        self.assertIn("token", response_data)
