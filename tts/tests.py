@@ -55,3 +55,27 @@ class TestProjectCreate(APITestCase):
         self.assertIn("text", response_data)
         self.assertIn("project_page", response_data)
         self.assertIn("project", response_data)
+
+
+class TestAudio(APITestCase):
+    def setUp(self):
+        self.user = get_user()
+
+    def test_put_audio_text(self):
+        """
+        텍스트 수정 테스트
+        """
+        token = RefreshToken.for_user(self.user)
+        project_url = f"{PATH}project/"
+        header = {"HTTP_AUTHORIZATION": f"Bearer {token.access_token}"}
+        self.client.post(project_url, REQUEST_DATA, **header)
+
+        get_audio_url = f"{PATH}audio/1/"
+        request_data = {"text": "변경하는 텍스트.", "speed": True}
+        response = self.client.put(get_audio_url, request_data, **header)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response_data, dict)
+        self.assertIn("text", response_data)
+        self.assertIn("speed", response_data)
