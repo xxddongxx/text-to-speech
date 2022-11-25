@@ -36,12 +36,12 @@ class Login(APIView):
         if user is not None:
             serializer = serializers.UsersSerializer(user)
             token = TokenObtainPairSerializer.get_token(user)
-            refresh_token = str(token)
             access_token = str(token.access_token)
+            refresh_token = str(token)
             response = Response(
                 {
-                    "user": serializer.data,
                     "message": "login success",
+                    "user": serializer.data,
                     "token": {
                         "access": access_token,
                         "refresh": refresh_token,
@@ -49,9 +49,13 @@ class Login(APIView):
                 },
                 status=status.HTTP_200_OK,
             )
+            response.set_cookie(key="access", value=access_token, httponly=True)
+            response.set_cookie(key="refresh", value=refresh_token, httponly=True)
             return response
         else:
-            return Response(status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {"message": "Fail Login"}, status=status.HTTP_400_BAD_REQUEST
+            )
 
 
 class Logout(APIView):
