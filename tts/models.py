@@ -5,6 +5,7 @@ class Title(models.Model):
     """
     프로젝트 대표 pk, title
     """
+
     title = models.CharField(max_length=200, verbose_name="제목")
 
     def __str__(self):
@@ -15,6 +16,7 @@ class Project(models.Model):
     """
     사람이 프로젝트 발표 하는 것 처럼 한 페이지가 발표 한 장
     """
+
     page = models.IntegerField(verbose_name="페이지")
     title = models.ForeignKey(Title, on_delete=models.CASCADE, verbose_name="제목")
     created_at = models.DateTimeField(auto_now_add=True, verbose_name="생성시간")
@@ -28,9 +30,10 @@ class Audio(models.Model):
     """
     한 페이지 당 10개의 문장
     """
+
     sequence = models.IntegerField(verbose_name="오디오순서")
     text = models.TextField(verbose_name="문장")
-    speed = models.FloatField(verbose_name="재생속도")
+    speed = models.BooleanField(default=False, verbose_name="재생속도")
     updated_at = models.DateTimeField(auto_now=True, verbose_name="갱신시간")
     # 프로젝트 제목 pk
     project = models.ForeignKey(Title, on_delete=models.CASCADE, verbose_name="프로젝트")
