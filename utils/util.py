@@ -49,11 +49,9 @@ class Util:
             data = {
                 "sequence": sequence,
                 "text": sentence,
-                "speed": 1.0,
                 "project": title_pk,
                 "project_page": project.page,
             }
-            print("data >>>> ", data)
 
             audio_serializer = serializers.AudioSerializer(data=data)
             if audio_serializer.is_valid():
