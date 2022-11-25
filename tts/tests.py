@@ -27,7 +27,7 @@ class TestProjectCreate(APITestCase):
         프로젝트 생성 및 오디오 파일 생성 테스트
         """
         token = RefreshToken.for_user(self.user)
-        project_url = PATH + "project/"
+        project_url = f"{PATH}project/"
         header = {"HTTP_AUTHORIZATION": f"Bearer {token.access_token}"}
         response = self.client.post(project_url, REQUEST_DATA, **header)
         response_data = response.json()
@@ -35,3 +35,23 @@ class TestProjectCreate(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
         self.assertIsInstance(response_data, dict)
         self.assertIn("message", response_data)
+
+    def test_get_project(self):
+        """
+        특정 텍스트 조회 테스트
+        """
+        token = RefreshToken.for_user(self.user)
+        project_url = f"{PATH}project/"
+        header = {"HTTP_AUTHORIZATION": f"Bearer {token.access_token}"}
+        self.client.post(project_url, REQUEST_DATA, **header)
+
+        get_project_url = f"{project_url}1/?query=안녕"
+        response = self.client.get(get_project_url, **header)
+        response_data = response.json()[0]
+
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertIsInstance(response_data, dict)
+        self.assertIn("sequence", response_data)
+        self.assertIn("text", response_data)
+        self.assertIn("project_page", response_data)
+        self.assertIn("project", response_data)
