@@ -1,5 +1,6 @@
 from rest_framework.test import APITestCase
 from rest_framework import status
+from users.models import User
 
 
 class TestRegister(APITestCase):
@@ -38,3 +39,24 @@ class TestRegister(APITestCase):
         self.assertIsInstance(response_data, dict)
         self.assertIn("username", response_data)
         self.assertNotIn("password", response_data)
+
+
+class TestLogin(APITestCase):
+    LOGIN_URL = "/api/v1/users/login/"
+
+    def setUp(self):
+        user = User.objects.create(username="test")
+        user.set_password("test1234")
+        user.save()
+        self.user = user
+
+    def test_login_fail(self):
+        """
+        로그인 실패 테스트
+        """
+        response = self.client.post(self.LOGIN_URL)
+        response_data = response.json()
+
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+        self.assertIsInstance(response_data, dict)
+        self.assertIn("message", response_data)
