@@ -1,7 +1,9 @@
 from django.contrib.auth import authenticate
 from rest_framework import status
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 
@@ -59,6 +61,9 @@ class Login(APIView):
 
 
 class Logout(APIView):
+    authentication_classes = [JWTAuthentication]
+    permission_classes = [IsAuthenticated]
+
     def post(self, request):
         """
         로그아웃
@@ -69,6 +74,13 @@ class Logout(APIView):
             token = RefreshToken(refresh_token)
             token.blacklist()
 
-            return Response(status=status.HTTP_205_RESET_CONTENT)
+            response = Response(
+                {"message": "Logout Success"}, status=status.HTTP_200_OK
+            )
+
+            response.delete_cookie("access")
+            response.delete_cookie("refresh")
+
+            return response
         except Exception as e:
             return Response(status=status.HTTP_400_BAD_REQUEST)
