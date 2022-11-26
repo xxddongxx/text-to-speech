@@ -47,7 +47,7 @@ class TestProjectCreate(APITestCase):
 
         get_project_url = f"{project_url}1/?query=안녕"
         response = self.client.get(get_project_url, **header)
-        response_data = response.json()[0]
+        response_data = response.json().get("result")[0]
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertIsInstance(response_data, dict)
