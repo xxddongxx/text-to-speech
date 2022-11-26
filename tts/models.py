@@ -1,5 +1,7 @@
 from django.db import models
 
+from users.models import User
+
 
 class Title(models.Model):
     """
@@ -7,6 +9,7 @@ class Title(models.Model):
     """
 
     title = models.CharField(max_length=200, verbose_name="제목")
+    author = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="작성자")
 
     def __str__(self):
         return f"{self.title}"

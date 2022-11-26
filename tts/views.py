@@ -5,6 +5,7 @@ from rest_framework import status
 from rest_framework.exceptions import ParseError
 from rest_framework.response import Response
 from rest_framework.views import APIView
+from rest_framework_simplejwt.authentication import JWTAuthentication
 
 from tts import serializers
 from tts.models import Audio, Title
@@ -13,6 +14,7 @@ from utils.util import Util
 
 
 class ProjectView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsOwner]
 
     def post(self, request):
@@ -35,7 +37,7 @@ class ProjectView(APIView):
         if not title_serializer.is_valid():
             return Response(title_serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        title_model = title_serializer.save()
+        title_model = title_serializer.save(author=self.request.user)
         title_pk = title_model.pk
 
         # 전처리
@@ -68,6 +70,7 @@ class ProjectView(APIView):
 
 
 class ProjectDetailView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsOwner]
 
     def get(self, request, pk):
@@ -104,6 +107,7 @@ class ProjectDetailView(APIView):
 
 
 class AudioDetailView(APIView):
+    authentication_classes = [JWTAuthentication]
     permission_classes = [IsOwner]
 
     def put(self, request, audio_pk):

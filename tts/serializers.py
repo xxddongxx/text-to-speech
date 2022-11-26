@@ -4,6 +4,8 @@ from tts.models import Project, Audio, Title
 
 
 class TitleSerializer(serializers.ModelSerializer):
+    author = serializers.ReadOnlyField(source="user.username")
+
     class Meta:
         model = Title
         fields = "__all__"
@@ -20,7 +22,8 @@ class AudioSerializer(serializers.ModelSerializer):
         model = Audio
         fields = "__all__"
 
+
 class AudioUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Audio
-        fields = ['text',  'speed']
+        fields = ["text", "speed"]
